@@ -1817,7 +1817,6 @@
 
         // Custom statuses storage
         let customStatuses = [];
-        let selectedStatusColor = null;
         let isAddingStatus = false;
 
         // Default statuses
@@ -1838,7 +1837,6 @@
             }
 
             isAddingStatus = true;
-            selectedStatusColor = null;
             refreshStatusConfigModal();
 
             // Focus the input after the DOM updates
@@ -1850,32 +1848,16 @@
 
         window.cancelAddStatus = function() {
             isAddingStatus = false;
-            selectedStatusColor = null;
             refreshStatusConfigModal();
-        };
-
-        window.selectStatusColor = function(colorElement) {
-            // Remove selected class from all color options
-            document.querySelectorAll('.status-config-modal .color-option').forEach(option => {
-                option.classList.remove('selected');
-            });
-
-            // Add selected class to clicked option
-            colorElement.classList.add('selected');
-            selectedStatusColor = colorElement.getAttribute('data-color');
         };
 
         window.addNewStatus = function() {
             const statusName = document.getElementById('statusNameInput').value.trim();
+            const statusColor = document.getElementById('statusColorInput').value;
 
             // Validate
             if (!statusName) {
                 alert('Please enter a status name');
-                return;
-            }
-
-            if (!selectedStatusColor) {
-                alert('Please select a color for the status');
                 return;
             }
 
@@ -1891,15 +1873,14 @@
             customStatuses.push({
                 name: statusName,
                 key: statusKey,
-                color: selectedStatusColor
+                color: statusColor
             });
 
             // Add dynamic CSS for the new status color
-            addStatusColorCSS(statusKey, selectedStatusColor);
+            addStatusColorCSS(statusKey, statusColor);
 
             // Reset and refresh
             isAddingStatus = false;
-            selectedStatusColor = null;
             refreshStatusConfigModal();
         };
 
@@ -1958,19 +1939,8 @@
                             <input type="text" class="form-input" id="statusNameInput" placeholder="e.g., Needs Review" maxlength="30" onkeypress="if(event.key === 'Enter') addNewStatus()">
                         </div>
                         <div class="form-group" style="margin-bottom: 16px;">
-                            <label class="form-label" style="font-size: 12px; color: #666; font-weight: 500;">Color *</label>
-                            <div class="color-picker-grid">
-                                <div class="color-option" style="background: #ef4444;" data-color="#ef4444" onclick="selectStatusColor(this)"></div>
-                                <div class="color-option" style="background: #f97316;" data-color="#f97316" onclick="selectStatusColor(this)"></div>
-                                <div class="color-option" style="background: #eab308;" data-color="#eab308" onclick="selectStatusColor(this)"></div>
-                                <div class="color-option" style="background: #10b981;" data-color="#10b981" onclick="selectStatusColor(this)"></div>
-                                <div class="color-option" style="background: #3b82f6;" data-color="#3b82f6" onclick="selectStatusColor(this)"></div>
-                                <div class="color-option" style="background: #6366f1;" data-color="#6366f1" onclick="selectStatusColor(this)"></div>
-                                <div class="color-option" style="background: #a855f7;" data-color="#a855f7" onclick="selectStatusColor(this)"></div>
-                                <div class="color-option" style="background: #ec4899;" data-color="#ec4899" onclick="selectStatusColor(this)"></div>
-                                <div class="color-option" style="background: #64748b;" data-color="#64748b" onclick="selectStatusColor(this)"></div>
-                                <div class="color-option" style="background: #0891b2;" data-color="#0891b2" onclick="selectStatusColor(this)"></div>
-                            </div>
+                            <label class="form-label">Color *</label>
+                            <input type="color" id="statusColorInput" value="#6366f1" style="width: 60px; height: 36px; border: 1.5px solid #d1d1d6; border-radius: 6px; cursor: pointer;">
                         </div>
                         <div style="display: flex; gap: 8px;">
                             <button class="btn" onclick="cancelAddStatus()" style="flex: 1;">Cancel</button>
