@@ -1038,14 +1038,15 @@
             border: none;
             cursor: pointer;
             padding: 4px 8px;
-            font-size: 18px;
+            font-size: 20px;
             line-height: 1;
-            filter: grayscale(100%) opacity(0.6);
-            transition: filter 0.2s;
+            color: #999;
+            transition: color 0.2s;
+            font-weight: 400;
         }
 
         .icon-btn:hover {
-            filter: grayscale(100%) opacity(1);
+            color: #ef4444;
         }
 
         .add-status-btn {
@@ -1932,17 +1933,16 @@
             allStatuses.forEach((status, index) => {
                 const isDefault = index < defaultStatuses.length;
                 const deleteBtn = isDefault ?
-                    '<button class="icon-btn" style="opacity: 0.3; cursor: not-allowed;" title="Cannot delete default status">🗑️</button>' :
-                    `<button class="icon-btn" onclick="deleteCustomStatus('${status.key}')">🗑️</button>`;
+                    '<button class="icon-btn" style="opacity: 0.3; cursor: not-allowed;" title="Cannot delete default status">×</button>' :
+                    `<button class="icon-btn" onclick="deleteCustomStatus('${status.key}')" title="Delete status">×</button>`;
 
                 statusListHTML += `
                     <div class="status-list-item" draggable="true" data-status-key="${status.key}" ondragstart="handleDragStart(event)" ondragover="handleDragOver(event)" ondrop="handleDrop(event)" ondragend="handleDragEnd(event)">
                         <span class="drag-handle">⋮⋮</span>
                         <span class="status status-${status.key}">
                             <span class="status-dot dot-${status.key}"></span>
-                            ${status.name}
+                            <span contenteditable="${!isDefault}" onblur="saveStatusName('${status.key}', this.textContent)" onkeydown="if(event.key === 'Enter') { event.preventDefault(); this.blur(); }" style="outline: none; ${!isDefault ? 'cursor: text;' : ''}">${status.name}</span>
                         </span>
-                        <button class="icon-btn" onclick="alert('Edit functionality coming soon')">✏️</button>
                         ${deleteBtn}
                     </div>
                 `;
@@ -1952,14 +1952,12 @@
             if (isAddingStatus) {
                 statusListHTML += `
                     <div style="background: #f9f9fb; border-radius: 8px; padding: 16px; margin-top: 12px;">
-                        <div style="display: flex; gap: 12px; align-items: flex-end; margin-bottom: 16px;">
-                            <div class="form-group" style="flex: 1; margin-bottom: 0;">
-                                <label class="form-label">Status Name *</label>
-                                <input type="text" class="form-input" id="statusNameInput" placeholder="e.g., Needs Review" maxlength="30" onkeypress="if(event.key === 'Enter') addNewStatus()">
+                        <div style="display: flex; gap: 12px; align-items: center; margin-bottom: 16px;">
+                            <div style="flex: 1;">
+                                <input type="text" class="form-input" id="statusNameInput" placeholder="Status name" maxlength="30" onkeypress="if(event.key === 'Enter') addNewStatus()">
                             </div>
-                            <div class="form-group" style="margin-bottom: 0;">
-                                <label class="form-label">Color *</label>
-                                <input type="color" id="statusColorInput" value="#6366f1" style="width: 60px; height: 38px; border: 1.5px solid #d1d1d6; border-radius: 6px; cursor: pointer;">
+                            <div>
+                                <input type="color" id="statusColorInput" value="#6366f1" style="width: 50px; height: 41px; border: 1.5px solid #d1d1d6; border-radius: 6px; cursor: pointer; padding: 2px;">
                             </div>
                         </div>
                         <div style="display: flex; gap: 8px;">
@@ -1983,6 +1981,28 @@
 
             statusConfigBody.innerHTML = statusListHTML;
         }
+
+        // Save edited status name
+        window.saveStatusName = function(statusKey, newName) {
+            newName = newName.trim();
+
+            if (!newName) {
+                refreshStatusConfigModal();
+                return;
+            }
+
+            // Find the status in custom statuses (only custom statuses are editable)
+            const status = customStatuses.find(s => s.key === statusKey);
+            if (!status) return;
+
+            // Check if name changed
+            if (status.name === newName) return;
+
+            // Update the name
+            status.name = newName;
+
+            // No need to refresh, the change is already visible
+        };
 
         // Delete custom status
         window.deleteCustomStatus = function(statusKey) {
