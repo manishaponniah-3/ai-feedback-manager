@@ -998,21 +998,39 @@
         .status-list-item {
             display: flex;
             align-items: center;
-            gap: 12px;
-            padding: 12px;
+            gap: 8px;
+            padding: 10px 12px;
             background: #f9f9fb;
             border-radius: 8px;
             margin-bottom: 8px;
+            transition: background 0.2s;
+        }
+
+        .status-list-item.dragging {
+            opacity: 0.5;
+        }
+
+        .status-list-item.drag-over {
+            background: #e8e8f0;
         }
 
         .drag-handle {
             cursor: grab;
             color: #999;
-            font-size: 18px;
+            font-size: 16px;
+            width: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .drag-handle:active {
+            cursor: grabbing;
         }
 
         .status-list-item .status {
             flex: 1;
+            min-width: 0;
         }
 
         .icon-btn {
@@ -1918,7 +1936,7 @@
                     `<button class="icon-btn" onclick="deleteCustomStatus('${status.key}')">🗑️</button>`;
 
                 statusListHTML += `
-                    <div class="status-list-item">
+                    <div class="status-list-item" draggable="true" data-status-key="${status.key}" ondragstart="handleDragStart(event)" ondragover="handleDragOver(event)" ondrop="handleDrop(event)" ondragend="handleDragEnd(event)">
                         <span class="drag-handle">⋮⋮</span>
                         <span class="status status-${status.key}">
                             <span class="status-dot dot-${status.key}"></span>
@@ -1934,13 +1952,15 @@
             if (isAddingStatus) {
                 statusListHTML += `
                     <div style="background: #f9f9fb; border-radius: 8px; padding: 16px; margin-top: 12px;">
-                        <div class="form-group" style="margin-bottom: 12px;">
-                            <label class="form-label">Status Name *</label>
-                            <input type="text" class="form-input" id="statusNameInput" placeholder="e.g., Needs Review" maxlength="30" onkeypress="if(event.key === 'Enter') addNewStatus()">
-                        </div>
-                        <div class="form-group" style="margin-bottom: 16px;">
-                            <label class="form-label">Color *</label>
-                            <input type="color" id="statusColorInput" value="#6366f1" style="width: 60px; height: 36px; border: 1.5px solid #d1d1d6; border-radius: 6px; cursor: pointer;">
+                        <div style="display: flex; gap: 12px; align-items: flex-end; margin-bottom: 16px;">
+                            <div class="form-group" style="flex: 1; margin-bottom: 0;">
+                                <label class="form-label">Status Name *</label>
+                                <input type="text" class="form-input" id="statusNameInput" placeholder="e.g., Needs Review" maxlength="30" onkeypress="if(event.key === 'Enter') addNewStatus()">
+                            </div>
+                            <div class="form-group" style="margin-bottom: 0;">
+                                <label class="form-label">Color *</label>
+                                <input type="color" id="statusColorInput" value="#6366f1" style="width: 60px; height: 38px; border: 1.5px solid #d1d1d6; border-radius: 6px; cursor: pointer;">
+                            </div>
                         </div>
                         <div style="display: flex; gap: 8px;">
                             <button class="btn" onclick="cancelAddStatus()" style="flex: 1;">Cancel</button>
@@ -1981,6 +2001,75 @@
 
             // Refresh the modal
             refreshStatusConfigModal();
+        };
+
+        // Drag and drop handlers for reordering statuses
+        let draggedStatusKey = null;
+
+        window.handleDragStart = function(event) {
+            draggedStatusKey = event.target.getAttribute('data-status-key');
+            event.target.classList.add('dragging');
+            event.dataTransfer.effectAllowed = 'move';
+        };
+
+        window.handleDragOver = function(event) {
+            event.preventDefault();
+            event.dataTransfer.dropEffect = 'move';
+            const target = event.target.closest('.status-list-item');
+            if (target && !target.classList.contains('dragging')) {
+                target.classList.add('drag-over');
+            }
+        };
+
+        window.handleDrop = function(event) {
+            event.preventDefault();
+            const target = event.target.closest('.status-list-item');
+            if (!target || !draggedStatusKey) return;
+
+            const targetStatusKey = target.getAttribute('data-status-key');
+            if (draggedStatusKey === targetStatusKey) return;
+
+            // Get all statuses
+            const allStatuses = [...defaultStatuses, ...customStatuses];
+
+            // Find indices
+            const draggedIndex = allStatuses.findIndex(s => s.key === draggedStatusKey);
+            const targetIndex = allStatuses.findIndex(s => s.key === targetStatusKey);
+
+            if (draggedIndex === -1 || targetIndex === -1) return;
+
+            // Check if trying to reorder default statuses with custom or vice versa
+            const isDraggedDefault = draggedIndex < defaultStatuses.length;
+            const isTargetDefault = targetIndex < defaultStatuses.length;
+
+            if (isDraggedDefault !== isTargetDefault) {
+                // Can't mix default and custom statuses
+                return;
+            }
+
+            // Reorder within the appropriate array
+            if (isDraggedDefault) {
+                // Reorder default statuses
+                const [removed] = defaultStatuses.splice(draggedIndex, 1);
+                defaultStatuses.splice(targetIndex, 0, removed);
+            } else {
+                // Reorder custom statuses
+                const draggedCustomIndex = draggedIndex - defaultStatuses.length;
+                const targetCustomIndex = targetIndex - defaultStatuses.length;
+                const [removed] = customStatuses.splice(draggedCustomIndex, 1);
+                customStatuses.splice(targetCustomIndex, 0, removed);
+            }
+
+            // Refresh the modal
+            refreshStatusConfigModal();
+        };
+
+        window.handleDragEnd = function(event) {
+            event.target.classList.remove('dragging');
+            document.querySelectorAll('.status-list-item').forEach(item => {
+                item.classList.remove('drag-over');
+            });
+            draggedStatusKey = null;
         };
 
         // Generate status dropdown menu HTML
