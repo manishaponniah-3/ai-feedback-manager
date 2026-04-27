@@ -1476,10 +1476,6 @@
                     <option value="month">This month</option>
                     <option value="custom">Custom range...</option>
                 </select>
-                <select class="filter-select" id="reviewedFilter" onchange="handleReviewedFilter(this)">
-                    <option value="reviewed">Reviewed</option>
-                    <option value="unreviewed" selected>Unreviewed</option>
-                </select>
                 <input type="date" class="filter-select" id="customDateStart" style="display: none;" placeholder="Start date">
                 <input type="date" class="filter-select" id="customDateEnd" style="display: none;" placeholder="End date">
             </div>
@@ -2249,12 +2245,6 @@
                     }
                 }
             }
-
-            // Re-apply the reviewed filter if one is active
-            const reviewedFilter = document.getElementById('reviewedFilter');
-            if (reviewedFilter && reviewedFilter.value !== 'all') {
-                handleReviewedFilter(reviewedFilter);
-            }
         };
 
         window.openRail = function(title, status, reporter, agent, created, feedbackId) {
@@ -2926,14 +2916,6 @@
                 }
             });
         };
-
-        // Apply unreviewed filter on page load
-        window.addEventListener('load', function() {
-            const reviewedFilter = document.getElementById('reviewedFilter');
-            if (reviewedFilter) {
-                handleReviewedFilter(reviewedFilter);
-            }
-        });
 
         // Open column customizer
         // Make functions globally accessible
