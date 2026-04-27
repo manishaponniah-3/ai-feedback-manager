@@ -1937,11 +1937,11 @@
                     `<button class="icon-btn" onclick="deleteCustomStatus('${status.key}')" title="Delete status">×</button>`;
 
                 statusListHTML += `
-                    <div class="status-list-item" draggable="true" data-status-key="${status.key}" ondragstart="handleDragStart(event)" ondragover="handleDragOver(event)" ondrop="handleDrop(event)" ondragend="handleDragEnd(event)">
+                    <div class="status-list-item" draggable="true" data-status-key="${status.key}" data-is-default="${isDefault}" ondragstart="handleDragStart(event)" ondragover="handleDragOver(event)" ondrop="handleDrop(event)" ondragend="handleDragEnd(event)">
                         <span class="drag-handle">⋮⋮</span>
                         <span class="status status-${status.key}">
                             <span class="status-dot dot-${status.key}"></span>
-                            <span contenteditable="${!isDefault}" onblur="saveStatusName('${status.key}', this.textContent)" onkeydown="if(event.key === 'Enter') { event.preventDefault(); this.blur(); }" style="outline: none; ${!isDefault ? 'cursor: text;' : ''}">${status.name}</span>
+                            <span contenteditable="true" onblur="saveStatusName('${status.key}', this.textContent, ${isDefault})" onkeydown="if(event.key === 'Enter') { event.preventDefault(); this.blur(); }" style="outline: none; cursor: text;">${status.name}</span>
                         </span>
                         ${deleteBtn}
                     </div>
@@ -1972,18 +1972,11 @@
                 `;
             }
 
-            statusListHTML += `
-                <div style="display: flex; gap: 12px; margin-top: 24px;">
-                    <button class="btn" onclick="closeStatusConfig()" style="flex: 1;">Cancel</button>
-                    <button class="btn btn-primary" onclick="alert('Would save status configuration'); closeStatusConfig();" style="flex: 1;">Save Changes</button>
-                </div>
-            `;
-
             statusConfigBody.innerHTML = statusListHTML;
         }
 
         // Save edited status name
-        window.saveStatusName = function(statusKey, newName) {
+        window.saveStatusName = function(statusKey, newName, isDefault) {
             newName = newName.trim();
 
             if (!newName) {
@@ -1991,8 +1984,14 @@
                 return;
             }
 
-            // Find the status in custom statuses (only custom statuses are editable)
-            const status = customStatuses.find(s => s.key === statusKey);
+            // Find the status in the appropriate array
+            let status;
+            if (isDefault) {
+                status = defaultStatuses.find(s => s.key === statusKey);
+            } else {
+                status = customStatuses.find(s => s.key === statusKey);
+            }
+
             if (!status) return;
 
             // Check if name changed
