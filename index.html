@@ -1884,7 +1884,12 @@
                         <span class="drag-handle">⋮⋮</span>
                         <span class="status status-${status.key}">
                             <span class="status-dot dot-${status.key}"></span>
-                            <span contenteditable="true" onblur="saveStatusName('${status.key}', this.textContent, ${isDefault})" onkeydown="if(event.key === 'Enter') { event.preventDefault(); this.blur(); }" style="outline: none; cursor: text;">${status.name}</span>
+                            <span contenteditable="true"
+                                  onblur="saveStatusName('${status.key}', this.textContent, ${isDefault})"
+                                  onkeydown="if(event.key === 'Enter') { event.preventDefault(); this.blur(); }"
+                                  onmousedown="event.stopPropagation();"
+                                  ondragstart="event.preventDefault(); return false;"
+                                  style="outline: none; cursor: text; user-select: text; -webkit-user-select: text;">${status.name}</span>
                         </span>
                         ${deleteBtn}
                     </div>
