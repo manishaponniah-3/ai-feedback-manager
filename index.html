@@ -1033,6 +1033,22 @@
             min-width: 0;
         }
 
+        .status-list-item .status [contenteditable] {
+            padding: 2px 6px;
+            margin: -2px -6px;
+            border-radius: 4px;
+            transition: background 0.15s;
+        }
+
+        .status-list-item .status [contenteditable]:hover {
+            background: rgba(99, 102, 241, 0.08);
+        }
+
+        .status-list-item .status [contenteditable]:focus {
+            background: #fff;
+            box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+        }
+
         .icon-btn {
             background: none;
             border: none;
@@ -1871,7 +1887,7 @@
             const allStatuses = [...defaultStatuses, ...customStatuses];
 
             // Build the status list HTML
-            let statusListHTML = '<p style="color: #666; font-size: 14px; margin-bottom: 16px;">Drag to reorder, edit names and colors, or add new statuses.</p>';
+            let statusListHTML = '<p style="color: #666; font-size: 14px; margin-bottom: 16px;">Drag to reorder, click names to edit, or add new statuses.</p>';
 
             allStatuses.forEach((status, index) => {
                 const isDefault = index < defaultStatuses.length;
