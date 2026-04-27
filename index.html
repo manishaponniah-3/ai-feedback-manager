@@ -2536,7 +2536,8 @@
                 icon.addEventListener('click', (e) => {
                     e.stopPropagation();
                     if (icon.classList.contains('blue')) {
-                        alert('Would navigate to linked test case');
+                        // Open test case in new tab (placeholder URL)
+                        window.open('https://example.com/test-case', '_blank');
                     } else {
                         alert('Would open modal to create test case');
                     }
