@@ -362,19 +362,20 @@
             display: inline-flex;
             align-items: center;
             gap: 4px;
-            padding: 2px 8px;
-            background: #f0fdf4;
-            border: 1px solid #bbf7d0;
-            border-radius: 12px;
+            padding: 2px 6px;
+            background: transparent;
+            border: none;
+            border-radius: 4px;
             font-size: 11px;
-            color: #15803d;
-            font-weight: 500;
+            color: #666;
+            font-weight: 400;
             cursor: help;
         }
 
         .reviewed-badge::before {
             content: "✓";
-            font-size: 12px;
+            font-size: 11px;
+            opacity: 0.6;
         }
 
         .status-picker.open {
@@ -2241,7 +2242,7 @@
                 const reviewedDiv = document.getElementById('reviewedIndicator');
                 if (reviewedDiv) {
                     if (reviewedItems[feedbackId]) {
-                        reviewedDiv.style.color = '#15803d';
+                        reviewedDiv.style.color = '#666';
                         reviewedDiv.style.cursor = 'pointer';
                         reviewedDiv.innerHTML = `✓ Reviewed by ${reviewedItems[feedbackId].reviewedBy} on ${reviewedItems[feedbackId].reviewedAt}`;
                     } else {
@@ -2293,7 +2294,7 @@
             // Check if already reviewed
             const isReviewed = reviewedItems[feedbackId];
             const reviewedIndicator = isReviewed
-                ? `<div id="reviewedIndicator" style="font-size: 11px; color: #15803d; margin-top: 4px; cursor: pointer;" onclick="toggleReviewed(${feedbackId})">✓ Reviewed by ${isReviewed.reviewedBy} on ${isReviewed.reviewedAt}</div>`
+                ? `<div id="reviewedIndicator" style="font-size: 11px; color: #666; margin-top: 4px; cursor: pointer;" onclick="toggleReviewed(${feedbackId})">✓ Reviewed by ${isReviewed.reviewedBy} on ${isReviewed.reviewedAt}</div>`
                 : `<div id="reviewedIndicator" style="font-size: 11px; margin-top: 4px;"><a href="#" onclick="toggleReviewed(${feedbackId}); return false;" style="color: #6366f1; text-decoration: none;">Mark as reviewed</a></div>`;
 
             railContent.innerHTML = `
