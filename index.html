@@ -1477,6 +1477,11 @@
                     <option value="month">This month</option>
                     <option value="custom">Custom range...</option>
                 </select>
+                <select class="filter-select" id="reviewedFilter" onchange="handleReviewedFilter(this)">
+                    <option value="all">All feedback</option>
+                    <option value="reviewed">Reviewed</option>
+                    <option value="unreviewed">Unreviewed</option>
+                </select>
                 <input type="date" class="filter-select" id="customDateStart" style="display: none;" placeholder="Start date">
                 <input type="date" class="filter-select" id="customDateEnd" style="display: none;" placeholder="End date">
             </div>
@@ -2205,6 +2210,12 @@
                     }
                 }
             }
+
+            // Re-apply the reviewed filter if one is active
+            const reviewedFilter = document.getElementById('reviewedFilter');
+            if (reviewedFilter && reviewedFilter.value !== 'all') {
+                handleReviewedFilter(reviewedFilter);
+            }
         };
 
         window.openRail = function(title, status, reporter, agent, created, feedbackId) {
@@ -2836,6 +2847,25 @@
                     alert('Would filter by: ' + select.options[select.selectedIndex].text);
                 }
             }
+        };
+
+        // Handle reviewed filter
+        window.handleReviewedFilter = function(select) {
+            const allRows = document.querySelectorAll('.feedback-row');
+            const filterValue = select.value;
+
+            allRows.forEach(row => {
+                const feedbackId = row.getAttribute('data-id');
+                const isReviewed = reviewedItems[feedbackId];
+
+                if (filterValue === 'all') {
+                    row.style.display = '';
+                } else if (filterValue === 'reviewed') {
+                    row.style.display = isReviewed ? '' : 'none';
+                } else if (filterValue === 'unreviewed') {
+                    row.style.display = isReviewed ? 'none' : '';
+                }
+            });
         };
 
         // Open column customizer
