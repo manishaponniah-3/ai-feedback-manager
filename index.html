@@ -1511,7 +1511,7 @@
                                         <span class="status-dot dot-inprogress"></span>
                                         In Progress
                                     </span>
-                                    <span class="reviewed-badge" style="display: none;" title="Reviewed by User on Apr 27, 2026">Reviewed</span>
+                                    <span class="reviewed-badge" style="display: inline-flex;" title="Reviewed by Sarah Chen on Apr 26, 2026 at 3:45 PM">Reviewed</span>
                                     <div class="status-picker">
                                         <div class="status-option" data-status="created">
                                             <span class="status-dot dot-created"></span> Created
@@ -1866,7 +1866,9 @@
         let currentFeedbackId = null;
 
         // Reviewed status tracking
-        let reviewedItems = {}; // { feedbackId: { reviewedBy: 'name', reviewedAt: timestamp } }
+        let reviewedItems = {
+            '1': { reviewedBy: 'Sarah Chen', reviewedAt: 'Apr 26, 2026, 3:45 PM' }
+        }; // { feedbackId: { reviewedBy: 'name', reviewedAt: timestamp } }
 
         // Custom statuses storage
         let customStatuses = [];
@@ -2741,14 +2743,19 @@
         // Handle status picker clicks (moved to DOMContentLoaded above)
 
         // Sort functionality
-        let statusSortDir = 1;
+        let statusSortDir = 0; // 0 = no sort, 1 = ascending, -1 = descending
         let dateSortDir = 1;
+        let originalRowOrder = [];
 
         window.addEventListener('load', function() {
             const statusHeader = document.getElementById('statusHeader');
             const createdHeader = document.getElementById('createdHeader');
 
-            // Sort by status
+            // Store original row order
+            const tbody = document.querySelector('tbody');
+            originalRowOrder = Array.from(tbody.querySelectorAll('tr.feedback-row'));
+
+            // Sort by status (3-state: asc -> desc -> no sort)
             statusHeader.addEventListener('click', function(e) {
                 // Don't sort if clicking the gear icon
                 if (e.target.closest('.settings-icon')) {
@@ -2758,29 +2765,46 @@
                 const tbody = document.querySelector('tbody');
                 const rows = Array.from(tbody.querySelectorAll('tr.feedback-row'));
 
-                const statusOrder = {
-                    'created': 1,
-                    'in progress': 2,
-                    'testing': 3,
-                    'verifying': 4,
-                    'closed': 5
-                };
+                // Cycle through sort states: 0 -> 1 -> -1 -> 0
+                if (statusSortDir === 0) {
+                    statusSortDir = 1; // ascending
+                } else if (statusSortDir === 1) {
+                    statusSortDir = -1; // descending
+                } else {
+                    statusSortDir = 0; // back to no sort
+                }
 
-                rows.sort((a, b) => {
-                    const statusA = a.querySelector('.status').textContent.trim().toLowerCase();
-                    const statusB = b.querySelector('.status').textContent.trim().toLowerCase();
-                    return (statusOrder[statusA] - statusOrder[statusB]) * statusSortDir;
-                });
+                if (statusSortDir === 0) {
+                    // Restore original order
+                    tbody.innerHTML = '';
+                    originalRowOrder.forEach(row => tbody.appendChild(row));
+                    statusHeader.classList.remove('sorted-asc', 'sorted-desc');
+                } else {
+                    // Sort by status
+                    const statusOrder = {
+                        'created': 1,
+                        'in progress': 2,
+                        'testing': 3,
+                        'verifying': 4,
+                        'closed': 5
+                    };
 
-                tbody.innerHTML = '';
-                rows.forEach(row => tbody.appendChild(row));
+                    rows.sort((a, b) => {
+                        const statusA = a.querySelector('.status').textContent.trim().toLowerCase();
+                        const statusB = b.querySelector('.status').textContent.trim().toLowerCase();
+                        return (statusOrder[statusA] - statusOrder[statusB]) * statusSortDir;
+                    });
+
+                    tbody.innerHTML = '';
+                    rows.forEach(row => tbody.appendChild(row));
+
+                    // Update header classes
+                    statusHeader.classList.remove('sorted-asc', 'sorted-desc');
+                    statusHeader.classList.add(statusSortDir === 1 ? 'sorted-asc' : 'sorted-desc');
+                }
 
                 // Reset other headers
                 createdHeader.classList.remove('sorted-asc', 'sorted-desc');
-                statusHeader.classList.remove('sorted-asc', 'sorted-desc');
-                statusHeader.classList.add(statusSortDir === 1 ? 'sorted-asc' : 'sorted-desc');
-
-                statusSortDir *= -1;
             });
 
             // Sort by date
