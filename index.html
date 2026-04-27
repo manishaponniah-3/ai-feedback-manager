@@ -1501,7 +1501,7 @@
                                         <span class="status-dot dot-inprogress"></span>
                                         In Progress
                                     </span>
-                                    <span class="reviewed-badge" style="display: inline-flex;" title="Reviewed by Sarah Chen on Apr 26, 2026 at 3:45 PM"></span>
+                                    <span class="reviewed-badge" style="display: inline-flex;" title="Reviewed"></span>
                                     <div class="status-picker">
                                         <div class="status-option" data-status="created">
                                             <span class="status-dot dot-created"></span> Created
@@ -2219,7 +2219,7 @@
                 if (badge) {
                     if (reviewedItems[feedbackId]) {
                         badge.style.display = 'inline-flex';
-                        badge.title = `Reviewed by ${reviewedItems[feedbackId].reviewedBy} on ${reviewedItems[feedbackId].reviewedAt}`;
+                        badge.title = 'Reviewed';
                     } else {
                         badge.style.display = 'none';
                     }
