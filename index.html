@@ -1802,49 +1802,6 @@
         </div>
     </div>
 
-    <!-- Add Status Modal -->
-    <div class="modal" id="addStatusModal">
-        <div class="modal-content" style="width: 500px;">
-            <div class="modal-header">
-                <div class="modal-title">Add New Status</div>
-                <button class="modal-close" onclick="closeAddStatusModal()">×</button>
-            </div>
-            <div class="modal-body">
-                <div class="form-group">
-                    <label class="form-label">Status Name *</label>
-                    <input type="text" class="form-input" id="statusNameInput" placeholder="e.g., Needs Review" maxlength="30">
-                    <div class="form-hint">Maximum 30 characters</div>
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label">Description (Optional)</label>
-                    <input type="text" class="form-input" id="statusDescriptionInput" placeholder="Brief description of this status" maxlength="100">
-                    <div class="form-hint">Maximum 100 characters</div>
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label">Status Color *</label>
-                    <div class="color-picker-grid">
-                        <div class="color-option" style="background: #ef4444;" data-color="#ef4444" onclick="selectStatusColor(this)"></div>
-                        <div class="color-option" style="background: #f97316;" data-color="#f97316" onclick="selectStatusColor(this)"></div>
-                        <div class="color-option" style="background: #eab308;" data-color="#eab308" onclick="selectStatusColor(this)"></div>
-                        <div class="color-option" style="background: #10b981;" data-color="#10b981" onclick="selectStatusColor(this)"></div>
-                        <div class="color-option" style="background: #3b82f6;" data-color="#3b82f6" onclick="selectStatusColor(this)"></div>
-                        <div class="color-option" style="background: #6366f1;" data-color="#6366f1" onclick="selectStatusColor(this)"></div>
-                        <div class="color-option" style="background: #a855f7;" data-color="#a855f7" onclick="selectStatusColor(this)"></div>
-                        <div class="color-option" style="background: #ec4899;" data-color="#ec4899" onclick="selectStatusColor(this)"></div>
-                        <div class="color-option" style="background: #64748b;" data-color="#64748b" onclick="selectStatusColor(this)"></div>
-                        <div class="color-option" style="background: #0891b2;" data-color="#0891b2" onclick="selectStatusColor(this)"></div>
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn" onclick="closeAddStatusModal()">Cancel</button>
-                <button class="btn btn-primary" id="addStatusBtn" onclick="addNewStatus()">Add Status</button>
-            </div>
-        </div>
-    </div>
-
     <script>
         window.closeRail = function() {
             document.getElementById('rightRail').classList.remove('open');
@@ -1857,6 +1814,7 @@
         // Custom statuses storage
         let customStatuses = [];
         let selectedStatusColor = null;
+        let isAddingStatus = false;
 
         // Default statuses
         const defaultStatuses = [
@@ -1867,8 +1825,7 @@
             { name: 'Closed', key: 'closed', color: '#10b981' }
         ];
 
-        // Open/close add status modal
-        window.openAddStatusModal = function() {
+        window.showAddStatusForm = function() {
             // Check if we've reached the max limit of 10 statuses
             const totalStatuses = defaultStatuses.length + customStatuses.length;
             if (totalStatuses >= 10) {
@@ -1876,26 +1833,20 @@
                 return;
             }
 
-            // Reset form
-            document.getElementById('statusNameInput').value = '';
-            document.getElementById('statusDescriptionInput').value = '';
+            isAddingStatus = true;
             selectedStatusColor = null;
-
-            // Clear all selected colors
-            document.querySelectorAll('#addStatusModal .color-option').forEach(option => {
-                option.classList.remove('selected');
-            });
-
-            document.getElementById('addStatusModal').classList.add('open');
+            refreshStatusConfigModal();
         };
 
-        window.closeAddStatusModal = function() {
-            document.getElementById('addStatusModal').classList.remove('open');
+        window.cancelAddStatus = function() {
+            isAddingStatus = false;
+            selectedStatusColor = null;
+            refreshStatusConfigModal();
         };
 
         window.selectStatusColor = function(colorElement) {
             // Remove selected class from all color options
-            document.querySelectorAll('#addStatusModal .color-option').forEach(option => {
+            document.querySelectorAll('.status-config-modal .color-option').forEach(option => {
                 option.classList.remove('selected');
             });
 
@@ -1906,7 +1857,6 @@
 
         window.addNewStatus = function() {
             const statusName = document.getElementById('statusNameInput').value.trim();
-            const statusDescription = document.getElementById('statusDescriptionInput').value.trim();
 
             // Validate
             if (!statusName) {
@@ -1931,20 +1881,16 @@
             customStatuses.push({
                 name: statusName,
                 key: statusKey,
-                color: selectedStatusColor,
-                description: statusDescription
+                color: selectedStatusColor
             });
 
             // Add dynamic CSS for the new status color
             addStatusColorCSS(statusKey, selectedStatusColor);
 
-            // Refresh status config modal
+            // Reset and refresh
+            isAddingStatus = false;
+            selectedStatusColor = null;
             refreshStatusConfigModal();
-
-            // Close the modal
-            closeAddStatusModal();
-
-            alert(`Status "${statusName}" added successfully!`);
         };
 
         // Add CSS for custom status color
@@ -1993,8 +1939,42 @@
                 `;
             });
 
+            // Add inline form if adding a new status
+            if (isAddingStatus) {
+                statusListHTML += `
+                    <div style="background: #f9f9fb; border-radius: 8px; padding: 16px; margin-top: 12px;">
+                        <div class="form-group" style="margin-bottom: 16px;">
+                            <label class="form-label">Status Name *</label>
+                            <input type="text" class="form-input" id="statusNameInput" placeholder="e.g., Needs Review" maxlength="30">
+                        </div>
+                        <div class="form-group" style="margin-bottom: 16px;">
+                            <label class="form-label">Status Color *</label>
+                            <div class="color-picker-grid">
+                                <div class="color-option" style="background: #ef4444;" data-color="#ef4444" onclick="selectStatusColor(this)"></div>
+                                <div class="color-option" style="background: #f97316;" data-color="#f97316" onclick="selectStatusColor(this)"></div>
+                                <div class="color-option" style="background: #eab308;" data-color="#eab308" onclick="selectStatusColor(this)"></div>
+                                <div class="color-option" style="background: #10b981;" data-color="#10b981" onclick="selectStatusColor(this)"></div>
+                                <div class="color-option" style="background: #3b82f6;" data-color="#3b82f6" onclick="selectStatusColor(this)"></div>
+                                <div class="color-option" style="background: #6366f1;" data-color="#6366f1" onclick="selectStatusColor(this)"></div>
+                                <div class="color-option" style="background: #a855f7;" data-color="#a855f7" onclick="selectStatusColor(this)"></div>
+                                <div class="color-option" style="background: #ec4899;" data-color="#ec4899" onclick="selectStatusColor(this)"></div>
+                                <div class="color-option" style="background: #64748b;" data-color="#64748b" onclick="selectStatusColor(this)"></div>
+                                <div class="color-option" style="background: #0891b2;" data-color="#0891b2" onclick="selectStatusColor(this)"></div>
+                            </div>
+                        </div>
+                        <div style="display: flex; gap: 8px;">
+                            <button class="btn" onclick="cancelAddStatus()" style="flex: 1;">Cancel</button>
+                            <button class="btn btn-primary" onclick="addNewStatus()" style="flex: 1;">Add Status</button>
+                        </div>
+                    </div>
+                `;
+            } else {
+                statusListHTML += `
+                    <button class="add-status-btn" onclick="showAddStatusForm()">+ Add Status</button>
+                `;
+            }
+
             statusListHTML += `
-                <button class="add-status-btn" onclick="openAddStatusModal()">+ Add Status</button>
                 <div style="display: flex; gap: 12px; margin-top: 24px;">
                     <button class="btn" onclick="closeStatusConfig()" style="flex: 1;">Cancel</button>
                     <button class="btn btn-primary" onclick="alert('Would save status configuration'); closeStatusConfig();" style="flex: 1;">Save Changes</button>
@@ -2746,10 +2726,13 @@
 
         // Status config modal
         window.openStatusConfig = function() {
+            isAddingStatus = false;
+            refreshStatusConfigModal();
             document.getElementById('statusConfigModal').classList.add('open');
         };
 
         window.closeStatusConfig = function() {
+            isAddingStatus = false;
             document.getElementById('statusConfigModal').classList.remove('open');
         };
 
