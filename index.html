@@ -2192,19 +2192,16 @@
 
             // Refresh the detail panel if it's open for this item
             if (currentFeedbackId === feedbackId) {
-                const railContent = document.querySelector('.rail-content');
-                const button = railContent.querySelector('button');
-                if (button) {
+                const reviewedDiv = document.getElementById('reviewedIndicator');
+                if (reviewedDiv) {
                     if (reviewedItems[feedbackId]) {
-                        button.textContent = `✓ Reviewed by ${reviewedItems[feedbackId].reviewedBy}`;
-                        button.style.background = '#f0fdf4';
-                        button.style.border = '1px solid #bbf7d0';
-                        button.style.color = '#15803d';
+                        reviewedDiv.style.color = '#15803d';
+                        reviewedDiv.style.cursor = 'pointer';
+                        reviewedDiv.innerHTML = `✓ Reviewed by ${reviewedItems[feedbackId].reviewedBy} on ${reviewedItems[feedbackId].reviewedAt}`;
                     } else {
-                        button.textContent = 'Mark as Reviewed';
-                        button.style.background = '';
-                        button.style.border = '1px solid #d1d1d6';
-                        button.style.color = '';
+                        reviewedDiv.style.color = '';
+                        reviewedDiv.style.cursor = '';
+                        reviewedDiv.innerHTML = `<a href="#" onclick="toggleReviewed(${feedbackId}); return false;" style="color: #6366f1; text-decoration: none;">Mark as reviewed</a>`;
                     }
                 }
             }
@@ -2243,16 +2240,12 @@
 
             // Check if already reviewed
             const isReviewed = reviewedItems[feedbackId];
-            const reviewedButton = isReviewed
-                ? `<button class="btn" onclick="toggleReviewed(${feedbackId})" style="background: #f0fdf4; border: 1px solid #bbf7d0; color: #15803d;">✓ Reviewed by ${isReviewed.reviewedBy}</button>`
-                : `<button class="btn" onclick="toggleReviewed(${feedbackId})" style="border: 1px solid #d1d1d6;">Mark as Reviewed</button>`;
+            const reviewedIndicator = isReviewed
+                ? `<div id="reviewedIndicator" style="font-size: 11px; color: #15803d; margin-top: 4px; cursor: pointer;" onclick="toggleReviewed(${feedbackId})">✓ Reviewed by ${isReviewed.reviewedBy} on ${isReviewed.reviewedAt}</div>`
+                : `<div id="reviewedIndicator" style="font-size: 11px; margin-top: 4px;"><a href="#" onclick="toggleReviewed(${feedbackId}); return false;" style="color: #6366f1; text-decoration: none;">Mark as reviewed</a></div>`;
 
             railContent.innerHTML = `
                 <input type="text" class="editable-title" id="feedbackTitle" value="${title}" placeholder="Feedback title" onblur="alert('Would save title: ' + this.value)">
-
-                <div style="margin-bottom: 20px;">
-                    ${reviewedButton}
-                </div>
 
                 <div class="detail-section">
                     <div class="detail-label">Status</div>
@@ -2267,6 +2260,7 @@
                             </div>
                         </div>
                         <div style="font-size: 11px; color: #999; margin-top: 4px;">Changed Apr 19, 10:22 AM</div>
+                        ${reviewedIndicator}
                     </div>
                 </div>
 
