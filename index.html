@@ -875,21 +875,6 @@
             margin-bottom: 6px;
         }
 
-        .comment-reply-btn {
-            font-size: 12px;
-            font-weight: 500;
-            color: #6366f1;
-            background: none;
-            border: none;
-            cursor: pointer;
-            padding: 0;
-            margin-top: 2px;
-        }
-
-        .comment-reply-btn:hover {
-            text-decoration: underline;
-        }
-
         .comment-reply {
             margin-top: 8px;
             margin-left: 32px;
@@ -2477,14 +2462,6 @@
                             <div class="comment-body">
                                 ${status === 'closed' ? 'Verified the fix is working correctly in production.' : 'I\'ve seen this happen 3 times today alone. Always with the "Pro" and "Pro Plus" products.'}
                             </div>
-                            <button class="comment-reply-btn" onclick="toggleReply(this)">Reply</button>
-                            <div class="reply-input-wrapper" style="display: none; margin-top: 12px; margin-left: 0;">
-                                <textarea class="comment-input" placeholder="Write a reply..." style="min-height: 50px;"></textarea>
-                                <div style="display: flex; gap: 8px; margin-top: 8px; justify-content: flex-end;">
-                                    <button class="btn" style="padding: 5px 10px; font-size: 12px;" onclick="cancelReply(this)">Cancel</button>
-                                    <button class="btn" style="padding: 5px 10px; font-size: 12px; opacity: 0.5; cursor: not-allowed;" disabled>Reply</button>
-                                </div>
-                            </div>
                         </div>
 
                         <div class="comment">
@@ -2494,14 +2471,6 @@
                             </div>
                             <div class="comment-body">
                                 ${status === 'closed' ? 'Deployed the fix and moving this to closed.' : 'Created a test case to reproduce this. Moving to In Progress.'}
-                            </div>
-                            <button class="comment-reply-btn" onclick="toggleReply(this)">Reply</button>
-                            <div class="reply-input-wrapper" style="display: none; margin-top: 12px; margin-left: 0;">
-                                <textarea class="comment-input" placeholder="Write a reply..." style="min-height: 50px;"></textarea>
-                                <div style="display: flex; gap: 8px; margin-top: 8px; justify-content: flex-end;">
-                                    <button class="btn" style="padding: 5px 10px; font-size: 12px;" onclick="cancelReply(this)">Cancel</button>
-                                    <button class="btn" style="padding: 5px 10px; font-size: 12px; opacity: 0.5; cursor: not-allowed;" disabled>Reply</button>
-                                </div>
                             </div>
 
                             <div class="comment-reply">
@@ -2522,14 +2491,6 @@
                             </div>
                             <div class="comment-body">
                                 Adding some additional context here about the issue.
-                            </div>
-                            <button class="comment-reply-btn" onclick="toggleReply(this)">Reply</button>
-                            <div class="reply-input-wrapper" style="display: none; margin-top: 12px; margin-left: 0;">
-                                <textarea class="comment-input" placeholder="Write a reply..." style="min-height: 50px;"></textarea>
-                                <div style="display: flex; gap: 8px; margin-top: 8px; justify-content: flex-end;">
-                                    <button class="btn" style="padding: 5px 10px; font-size: 12px;" onclick="cancelReply(this)">Cancel</button>
-                                    <button class="btn" style="padding: 5px 10px; font-size: 12px; opacity: 0.5; cursor: not-allowed;" disabled>Reply</button>
-                                </div>
                             </div>
                         </div>
                     </div>
@@ -2571,70 +2532,8 @@
                         }
                     });
                 }
-
-                // Setup reply input listeners
-                document.querySelectorAll('.reply-input-wrapper textarea').forEach(textarea => {
-                    const replyBtn = textarea.parentElement.querySelector('button[disabled]');
-                    if (replyBtn) {
-                        textarea.addEventListener('input', function() {
-                            if (this.value.trim().length > 0) {
-                                replyBtn.disabled = false;
-                                replyBtn.style.opacity = '1';
-                                replyBtn.style.cursor = 'pointer';
-                                replyBtn.style.background = '#1a1d24';
-                                replyBtn.style.color = '#fff';
-                                replyBtn.style.borderColor = '#1a1d24';
-                            } else {
-                                replyBtn.disabled = true;
-                                replyBtn.style.opacity = '0.5';
-                                replyBtn.style.cursor = 'not-allowed';
-                                replyBtn.style.background = '#fff';
-                                replyBtn.style.color = '#666';
-                                replyBtn.style.borderColor = '#d1d1d6';
-                            }
-                        });
-                    }
-                });
             }, 100);
         }
-
-        // Toggle reply input
-        window.toggleReply = function(btn) {
-            const comment = btn.closest('.comment');
-            const replyWrapper = comment.querySelector('.reply-input-wrapper');
-            const isVisible = replyWrapper.style.display !== 'none';
-
-            // Hide all other reply inputs
-            document.querySelectorAll('.reply-input-wrapper').forEach(wrapper => {
-                wrapper.style.display = 'none';
-            });
-
-            // Toggle this one
-            if (!isVisible) {
-                replyWrapper.style.display = 'block';
-                const textarea = replyWrapper.querySelector('textarea');
-                textarea.focus();
-            }
-        };
-
-        // Cancel reply
-        window.cancelReply = function(btn) {
-            const replyWrapper = btn.closest('.reply-input-wrapper');
-            const textarea = replyWrapper.querySelector('textarea');
-            textarea.value = '';
-            replyWrapper.style.display = 'none';
-
-            // Reset button state
-            const replyBtn = replyWrapper.querySelector('button[disabled], button:not([onclick])');
-            if (replyBtn) {
-                replyBtn.disabled = true;
-                replyBtn.style.opacity = '0.5';
-                replyBtn.style.cursor = 'not-allowed';
-                replyBtn.style.background = '#fff';
-                replyBtn.style.color = '#666';
-                replyBtn.style.borderColor = '#d1d1d6';
-            }
-        };
 
         // Setup all event listeners when DOM is ready
         document.addEventListener('DOMContentLoaded', function() {
