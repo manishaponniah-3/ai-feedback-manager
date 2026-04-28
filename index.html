@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <!-- Version: 2026-04-28-14:15 -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
@@ -1509,7 +1510,7 @@
                             <th style="width: 200px;">Reporter</th>
                             <th style="width: 180px; position: relative;" id="agentHeader">
                                 AI Agent
-                                <span class="settings-icon" onclick="event.stopPropagation(); toggleAgentFilter()" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); opacity: 0.5; cursor: pointer; font-size: 12px;">▾</span>
+                                <span class="settings-icon" onclick="event.stopPropagation(); toggleAgentFilter()" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); opacity: 0.7; cursor: pointer; font-size: 14px; color: #666;">▾</span>
                                 <div class="agent-filter-dropdown" id="agentFilterDropdown">
                                     <div class="agent-filter-option" onclick="filterByAgent('all')">
                                         <span>All Agents</span>
@@ -2410,9 +2411,9 @@
             if (!icon) return;
 
             if (currentAgentFilter === 'all' && !currentAgentSort) {
-                icon.style.opacity = '0.5';
+                icon.style.opacity = '0.7';
                 icon.textContent = '▾';
-                icon.style.color = '';
+                icon.style.color = '#666';
             } else {
                 icon.style.opacity = '1';
                 icon.textContent = '▾';
