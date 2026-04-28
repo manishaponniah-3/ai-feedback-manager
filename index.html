@@ -2464,8 +2464,13 @@
 
                 <div class="detail-section">
                     <div class="detail-label">Ticket</div>
-                    <div class="detail-value">
-                        <a href="#" onclick="alert('Would open create ticket modal'); return false;" style="color: #6366f1; text-decoration: none; font-size: 13px; font-weight: 500;">Create</a>
+                    <div class="detail-value" id="ticketSection">
+                        <button class="btn" onclick="createLinearTicket(); return false;" style="padding: 6px 12px; font-size: 13px; margin-bottom: 12px;">Create Linear Ticket</button>
+
+                        <div style="margin-top: 8px;">
+                            <label style="font-size: 11px; color: #999; display: block; margin-bottom: 4px;">External ticket URL:</label>
+                            <input type="text" id="externalTicketUrl" placeholder="Paste customer ticket link..." style="width: 100%; padding: 8px; border: 1.5px solid #d1d1d6; border-radius: 6px; font-size: 13px;" onblur="saveExternalTicket()">
+                        </div>
                     </div>
                 </div>
 
@@ -2519,6 +2524,9 @@
 
             // Setup comment input listener for main comment
             setTimeout(() => {
+                // Initialize ticket section
+                updateTicketSection();
+
                 const mainCommentInput = document.getElementById('mainCommentInput');
                 const postCommentBtn = document.getElementById('postCommentBtn');
 
@@ -2979,6 +2987,90 @@
                 }
             });
         };
+
+        // Ticket management
+        let linearTickets = {}; // { feedbackId: 'ENG-1234' }
+        let externalTickets = {}; // { feedbackId: 'https://...' }
+
+        window.createLinearTicket = function() {
+            if (!currentFeedbackId) return;
+
+            // Generate a mock Linear ticket ID
+            const ticketId = 'ENG-' + Math.floor(Math.random() * 9000 + 1000);
+            linearTickets[currentFeedbackId] = ticketId;
+
+            // Update the ticket section
+            updateTicketSection();
+        };
+
+        window.saveExternalTicket = function() {
+            if (!currentFeedbackId) return;
+
+            const urlInput = document.getElementById('externalTicketUrl');
+            const url = urlInput ? urlInput.value.trim() : '';
+
+            if (url) {
+                externalTickets[currentFeedbackId] = url;
+            } else {
+                delete externalTickets[currentFeedbackId];
+            }
+
+            // Update the ticket section
+            updateTicketSection();
+        };
+
+        function updateTicketSection() {
+            if (!currentFeedbackId) return;
+
+            const ticketSection = document.getElementById('ticketSection');
+            if (!ticketSection) return;
+
+            const linearTicket = linearTickets[currentFeedbackId];
+            const externalTicket = externalTickets[currentFeedbackId];
+
+            let html = '';
+
+            // Show Linear ticket if exists
+            if (linearTicket) {
+                html += '<div style="margin-bottom: 12px;">';
+                html += '<span style="font-size: 10px; color: #999; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 500;">Internal</span><br>';
+                html += '<a href="#" onclick="alert(\'Would open Linear ticket: ' + linearTicket + '\'); return false;" style="color: #6366f1; text-decoration: none; font-size: 13px; font-weight: 500; display: inline-flex; align-items: center; gap: 4px;">';
+                html += '🔲 ' + linearTicket + ' <span style="font-size: 11px;">↗</span>';
+                html += '</a>';
+                html += '</div>';
+            } else {
+                html += '<button class="btn" onclick="createLinearTicket(); return false;" style="padding: 6px 12px; font-size: 13px; margin-bottom: 12px;">Create Linear Ticket</button><br>';
+            }
+
+            // Show external ticket if exists
+            if (externalTicket) {
+                // Try to extract ticket ID from common patterns
+                let displayText = externalTicket;
+                const jiraMatch = externalTicket.match(/([A-Z]+-\d+)/);
+                const zenMatch = externalTicket.match(/tickets\/(\d+)/);
+
+                if (jiraMatch) {
+                    displayText = jiraMatch[1];
+                } else if (zenMatch) {
+                    displayText = 'Ticket #' + zenMatch[1];
+                }
+
+                html += '<div style="margin-top: 12px;">';
+                html += '<span style="font-size: 10px; color: #999; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 500;">Customer</span><br>';
+                html += '<a href="' + externalTicket + '" target="_blank" style="color: #6366f1; text-decoration: none; font-size: 13px; font-weight: 500; display: inline-flex; align-items: center; gap: 4px;">';
+                html += '🔗 ' + displayText + ' <span style="font-size: 11px;">↗</span>';
+                html += '</a><br>';
+                html += '<div style="font-size: 11px; color: #999; margin-top: 2px; word-break: break-all;">' + externalTicket + '</div>';
+                html += '</div>';
+            } else {
+                html += '<div style="margin-top: 12px;">';
+                html += '<label style="font-size: 11px; color: #999; display: block; margin-bottom: 4px;">External ticket URL:</label>';
+                html += '<input type="text" id="externalTicketUrl" placeholder="Paste customer ticket link..." style="width: 100%; padding: 8px; border: 1.5px solid #d1d1d6; border-radius: 6px; font-size: 13px;" onblur="saveExternalTicket()">';
+                html += '</div>';
+            }
+
+            ticketSection.innerHTML = html;
+        }
 
         // Open column customizer
         // Make functions globally accessible
