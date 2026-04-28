@@ -2403,8 +2403,8 @@
             // Check if already reviewed
             const isReviewed = reviewedItems[feedbackId];
             const reviewedIndicator = isReviewed
-                ? `<div id="reviewedIndicator" style="font-size: 11px; color: #666; margin-top: 4px; cursor: pointer;" onclick="toggleReviewed(${feedbackId})">✓ Reviewed by ${isReviewed.reviewedBy} on ${isReviewed.reviewedAt}</div>`
-                : `<div id="reviewedIndicator" style="font-size: 11px; margin-top: 4px;"><a href="#" onclick="toggleReviewed(${feedbackId}); return false;" style="color: #6366f1; text-decoration: none;">Mark as reviewed</a></div>`;
+                ? `<div id="reviewedIndicator" style="font-size: 11px; color: #666; margin-top: 12px; cursor: pointer;" onclick="toggleReviewed(${feedbackId})">✓ Reviewed by ${isReviewed.reviewedBy} on ${isReviewed.reviewedAt}</div>`
+                : `<div id="reviewedIndicator" style="font-size: 11px; margin-top: 12px;"><a href="#" onclick="toggleReviewed(${feedbackId}); return false;" style="color: #6366f1; text-decoration: none;">Mark as reviewed</a></div>`;
 
             railContent.innerHTML = `
                 <input type="text" class="editable-title" id="feedbackTitle" value="${title}" placeholder="Feedback title" onblur="alert('Would save title: ' + this.value)">
