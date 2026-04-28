@@ -2268,6 +2268,7 @@
 
         // Agent filter functionality
         let currentAgentFilter = 'all';
+        let currentAgentSort = null; // 'asc' or 'desc' or null
 
         // Populate agent filter dropdown with unique agents from the table
         function populateAgentFilter() {
@@ -2288,8 +2289,16 @@
                 }
             });
 
-            // Build dropdown HTML
-            let html = '<div class="agent-filter-option' + (currentAgentFilter === 'all' ? ' selected' : '') + '" onclick="filterByAgent(\'all\'); event.stopPropagation();">';
+            // Build dropdown HTML with sort options first
+            let html = '<div class="agent-filter-option' + (currentAgentSort === 'asc' ? ' selected' : '') + '" onclick="sortByAgent(\'asc\'); event.stopPropagation();" style="border-bottom: 1px solid #e5e5e7; padding-bottom: 8px; margin-bottom: 4px;">';
+            html += '<span>Sort A → Z</span>';
+            html += '</div>';
+
+            html += '<div class="agent-filter-option' + (currentAgentSort === 'desc' ? ' selected' : '') + '" onclick="sortByAgent(\'desc\'); event.stopPropagation();" style="border-bottom: 1px solid #e5e5e7; padding-bottom: 8px; margin-bottom: 4px;">';
+            html += '<span>Sort Z → A</span>';
+            html += '</div>';
+
+            html += '<div class="agent-filter-option' + (currentAgentFilter === 'all' && !currentAgentSort ? ' selected' : '') + '" onclick="filterByAgent(\'all\'); event.stopPropagation();">';
             html += '<span>All Agents</span>';
             html += '</div>';
 
@@ -2322,9 +2331,46 @@
             dropdown.classList.toggle('open');
         };
 
+        // Sort table by agent
+        window.sortByAgent = function(direction) {
+            currentAgentSort = direction;
+            currentAgentFilter = 'all'; // Clear any filter when sorting
+
+            const tbody = document.querySelector('.feedback-row').parentElement;
+            const rows = Array.from(document.querySelectorAll('.feedback-row'));
+
+            // Sort rows by agent name
+            rows.sort((a, b) => {
+                const agentA = a.cells[3].textContent.trim();
+                const agentB = b.cells[3].textContent.trim();
+
+                if (direction === 'asc') {
+                    return agentA.localeCompare(agentB);
+                } else {
+                    return agentB.localeCompare(agentA);
+                }
+            });
+
+            // Re-append rows in sorted order
+            rows.forEach(row => {
+                row.style.display = '';
+                tbody.appendChild(row);
+            });
+
+            // Close the dropdown
+            const dropdown = document.getElementById('agentFilterDropdown');
+            if (dropdown) {
+                dropdown.classList.remove('open');
+            }
+
+            // Update the filter icon to show active sort
+            updateAgentFilterIcon();
+        };
+
         // Filter table by agent
         window.filterByAgent = function(agent) {
             currentAgentFilter = agent;
+            currentAgentSort = null; // Clear any sort when filtering
 
             const rows = document.querySelectorAll('.feedback-row');
             rows.forEach(row => {
@@ -2350,7 +2396,7 @@
             updateAgentFilterIcon();
         };
 
-        // Update the filter icon to show if a filter is active
+        // Update the filter icon to show if a filter or sort is active
         function updateAgentFilterIcon() {
             const header = document.getElementById('agentHeader');
             if (!header) return;
@@ -2358,7 +2404,7 @@
             const icon = header.querySelector('.settings-icon');
             if (!icon) return;
 
-            if (currentAgentFilter === 'all') {
+            if (currentAgentFilter === 'all' && !currentAgentSort) {
                 icon.style.opacity = '0.25';
                 icon.textContent = '▾';
                 icon.style.color = '';
