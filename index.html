@@ -2465,11 +2465,11 @@
                 <div class="detail-section">
                     <div class="detail-label">Ticket</div>
                     <div class="detail-value" id="ticketSection">
-                        <button class="btn" onclick="createLinearTicket(); return false;" style="padding: 6px 12px; font-size: 13px; margin-bottom: 12px;">Create Linear Ticket</button>
+                        <button class="btn" onclick="createLinearTicket(); return false;" style="padding: 6px 12px; font-size: 13px;">Create Linear Ticket</button>
 
-                        <div style="margin-top: 8px;">
-                            <label style="font-size: 11px; color: #999; display: block; margin-bottom: 4px;">External ticket URL:</label>
-                            <input type="text" id="externalTicketUrl" placeholder="Paste customer ticket link..." style="width: 100%; padding: 8px; border: 1.5px solid #d1d1d6; border-radius: 6px; font-size: 13px;" onblur="saveExternalTicket()">
+                        <div style="margin-top: 12px;">
+                            <label style="font-size: 11px; color: #999; display: block; margin-bottom: 6px;">External ticket URL</label>
+                            <input type="text" id="externalTicketUrl" placeholder="Paste link..." style="width: 100%; padding: 7px 10px; border: 1.5px solid #d1d1d6; border-radius: 6px; font-size: 13px;" onblur="saveExternalTicket()">
                         </div>
                     </div>
                 </div>
@@ -3032,14 +3032,14 @@
 
             // Show Linear ticket if exists
             if (linearTicket) {
-                html += '<div style="margin-bottom: 12px;">';
-                html += '<span style="font-size: 10px; color: #999; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 500;">Internal</span><br>';
-                html += '<a href="#" onclick="alert(\'Would open Linear ticket: ' + linearTicket + '\'); return false;" style="color: #6366f1; text-decoration: none; font-size: 13px; font-weight: 500; display: inline-flex; align-items: center; gap: 4px;">';
+                html += '<div>';
+                html += '<span style="font-size: 10px; color: #999; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 500; margin-bottom: 4px; display: block;">Internal</span>';
+                html += '<a href="#" onclick="alert(\'Would open Linear ticket: ' + linearTicket + '\'); return false;" style="color: #6366f1; text-decoration: none; font-size: 13px; font-weight: 500; display: inline-flex; align-items: center; gap: 4px; margin-bottom: 4px;">';
                 html += '🔲 ' + linearTicket + ' <span style="font-size: 11px;">↗</span>';
                 html += '</a>';
                 html += '</div>';
             } else {
-                html += '<button class="btn" onclick="createLinearTicket(); return false;" style="padding: 6px 12px; font-size: 13px; margin-bottom: 12px;">Create Linear Ticket</button><br>';
+                html += '<button class="btn" onclick="createLinearTicket(); return false;" style="padding: 6px 12px; font-size: 13px;">Create Linear Ticket</button>';
             }
 
             // Show external ticket if exists
@@ -3056,16 +3056,16 @@
                 }
 
                 html += '<div style="margin-top: 12px;">';
-                html += '<span style="font-size: 10px; color: #999; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 500;">Customer</span><br>';
-                html += '<a href="' + externalTicket + '" target="_blank" style="color: #6366f1; text-decoration: none; font-size: 13px; font-weight: 500; display: inline-flex; align-items: center; gap: 4px;">';
+                html += '<span style="font-size: 10px; color: #999; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 500; margin-bottom: 4px; display: block;">Customer</span>';
+                html += '<a href="' + externalTicket + '" target="_blank" style="color: #6366f1; text-decoration: none; font-size: 13px; font-weight: 500; display: inline-flex; align-items: center; gap: 4px; margin-bottom: 4px;">';
                 html += '🔗 ' + displayText + ' <span style="font-size: 11px;">↗</span>';
-                html += '</a><br>';
-                html += '<div style="font-size: 11px; color: #999; margin-top: 2px; word-break: break-all;">' + externalTicket + '</div>';
+                html += '</a>';
+                html += '<div style="font-size: 11px; color: #999; word-break: break-all;">' + externalTicket + '</div>';
                 html += '</div>';
             } else {
                 html += '<div style="margin-top: 12px;">';
-                html += '<label style="font-size: 11px; color: #999; display: block; margin-bottom: 4px;">External ticket URL:</label>';
-                html += '<input type="text" id="externalTicketUrl" placeholder="Paste customer ticket link..." style="width: 100%; padding: 8px; border: 1.5px solid #d1d1d6; border-radius: 6px; font-size: 13px;" onblur="saveExternalTicket()">';
+                html += '<label style="font-size: 11px; color: #999; display: block; margin-bottom: 6px;">External ticket URL</label>';
+                html += '<input type="text" id="externalTicketUrl" placeholder="Paste link..." style="width: 100%; padding: 7px 10px; border: 1.5px solid #d1d1d6; border-radius: 6px; font-size: 13px;" onblur="saveExternalTicket()">';
                 html += '</div>';
             }
 
