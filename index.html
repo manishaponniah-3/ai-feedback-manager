@@ -389,6 +389,48 @@
             background: #f5f5f7;
         }
 
+        /* Agent filter dropdown */
+        .agent-filter-dropdown {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            margin-top: 4px;
+            background: #fff;
+            border: 1px solid #e5e5e7;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 10000;
+            min-width: 200px;
+            padding: 4px 0;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .agent-filter-dropdown.open {
+            display: block;
+        }
+
+        .agent-filter-option {
+            padding: 8px 12px;
+            cursor: pointer;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #1a1d24;
+        }
+
+        .agent-filter-option:hover {
+            background: #f5f5f7;
+        }
+
+        .agent-filter-option.selected {
+            background: #eff6ff;
+            color: #3b82f6;
+            font-weight: 500;
+        }
+
         .status-created { background: #fee; color: #c33; }
         .status-inprogress { background: #ffeaa7; color: #b8860b; }
         .status-testing { background: #dfe6ff; color: #4355db; }
@@ -1487,7 +1529,15 @@
                             </th>
                             <th>Title</th>
                             <th style="width: 200px;">Reporter</th>
-                            <th style="width: 180px;">AI Agent</th>
+                            <th style="width: 180px; position: relative;" id="agentHeader">
+                                AI Agent
+                                <span class="settings-icon" onclick="event.stopPropagation(); toggleAgentFilter()" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); opacity: 0.6; cursor: pointer;">🔽</span>
+                                <div class="agent-filter-dropdown" id="agentFilterDropdown">
+                                    <div class="agent-filter-option" onclick="filterByAgent('all')">
+                                        <span>All Agents</span>
+                                    </div>
+                                </div>
+                            </th>
                             <th class="sortable" id="createdHeader" style="width: 110px;">Created</th>
                             <th style="width: 180px;">Actions</th>
                             <th style="width: 40px; text-align: center;"><span class="settings-icon" id="addColumnIcon" style="cursor: pointer; font-size: 18px;">+</span></th>
@@ -2243,6 +2293,108 @@
             }
         };
 
+        // Agent filter functionality
+        let currentAgentFilter = 'all';
+
+        // Populate agent filter dropdown with unique agents from the table
+        function populateAgentFilter() {
+            const dropdown = document.getElementById('agentFilterDropdown');
+            if (!dropdown) return;
+
+            // Get all unique agents from the table
+            const rows = document.querySelectorAll('.feedback-row');
+            const agents = new Set();
+
+            rows.forEach(row => {
+                const agentCell = row.cells[3]; // AI Agent is the 4th column (index 3)
+                if (agentCell) {
+                    const agentName = agentCell.textContent.trim();
+                    if (agentName) {
+                        agents.add(agentName);
+                    }
+                }
+            });
+
+            // Build dropdown HTML
+            let html = '<div class="agent-filter-option' + (currentAgentFilter === 'all' ? ' selected' : '') + '" onclick="filterByAgent(\'all\'); event.stopPropagation();">';
+            html += '<span>All Agents</span>';
+            html += '</div>';
+
+            // Sort agents alphabetically
+            const sortedAgents = Array.from(agents).sort();
+            sortedAgents.forEach(agent => {
+                const isSelected = currentAgentFilter === agent ? ' selected' : '';
+                html += '<div class="agent-filter-option' + isSelected + '" onclick="filterByAgent(\'' + agent.replace(/'/g, "\\'") + '\'); event.stopPropagation();">';
+                html += '<span>' + agent + '</span>';
+                html += '</div>';
+            });
+
+            dropdown.innerHTML = html;
+        }
+
+        // Toggle agent filter dropdown
+        window.toggleAgentFilter = function() {
+            const dropdown = document.getElementById('agentFilterDropdown');
+            if (!dropdown) return;
+
+            // Close any open status pickers
+            document.querySelectorAll('.status-picker.open').forEach(p => {
+                p.classList.remove('open');
+            });
+
+            // Populate the dropdown before opening
+            populateAgentFilter();
+
+            // Toggle this dropdown
+            dropdown.classList.toggle('open');
+        };
+
+        // Filter table by agent
+        window.filterByAgent = function(agent) {
+            currentAgentFilter = agent;
+
+            const rows = document.querySelectorAll('.feedback-row');
+            rows.forEach(row => {
+                const agentCell = row.cells[3]; // AI Agent is the 4th column (index 3)
+                if (!agentCell) return;
+
+                const agentName = agentCell.textContent.trim();
+
+                if (agent === 'all' || agentName === agent) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+
+            // Close the dropdown
+            const dropdown = document.getElementById('agentFilterDropdown');
+            if (dropdown) {
+                dropdown.classList.remove('open');
+            }
+
+            // Update the filter icon to show active filter
+            updateAgentFilterIcon();
+        };
+
+        // Update the filter icon to show if a filter is active
+        function updateAgentFilterIcon() {
+            const header = document.getElementById('agentHeader');
+            if (!header) return;
+
+            const icon = header.querySelector('.settings-icon');
+            if (!icon) return;
+
+            if (currentAgentFilter === 'all') {
+                icon.style.opacity = '0.6';
+                icon.textContent = '🔽';
+            } else {
+                icon.style.opacity = '1';
+                icon.textContent = '🔽'; // Could use a different icon or color
+                icon.style.color = '#3b82f6';
+            }
+        }
+
         window.openRail = function(title, status, reporter, agent, created, feedbackId) {
             console.log('openRail called with:', title, status);
             currentFeedbackId = feedbackId;
@@ -2581,10 +2733,19 @@
 
             // Close status pickers when clicking outside
             document.addEventListener('click', (e) => {
+                // Close status pickers when clicking outside
                 if (!e.target.closest('.status-wrapper')) {
                     document.querySelectorAll('.status-picker.open').forEach(p => {
                         p.classList.remove('open');
                     });
+                }
+
+                // Close agent filter dropdown when clicking outside
+                if (!e.target.closest('#agentHeader')) {
+                    const dropdown = document.getElementById('agentFilterDropdown');
+                    if (dropdown && dropdown.classList.contains('open')) {
+                        dropdown.classList.remove('open');
+                    }
                 }
             });
 
