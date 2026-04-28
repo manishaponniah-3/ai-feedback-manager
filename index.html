@@ -1480,6 +1480,11 @@
 
             <div class="filters">
                 <input type="text" class="search-input" placeholder="Search feedback..." />
+                <select class="filter-select" id="reviewedFilter" onchange="handleReviewedFilter(this)">
+                    <option value="all">All Items</option>
+                    <option value="reviewed">Reviewed</option>
+                    <option value="unreviewed">Unreviewed</option>
+                </select>
                 <select class="filter-select" id="dateFilter" onchange="handleDateFilter(this)">
                     <option value="all">All time</option>
                     <option value="today">Today</option>
@@ -1504,7 +1509,7 @@
                             <th style="width: 200px;">Reporter</th>
                             <th style="width: 180px; position: relative;" id="agentHeader">
                                 AI Agent
-                                <span class="settings-icon" onclick="event.stopPropagation(); toggleAgentFilter()" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); opacity: 0.25; cursor: pointer; font-size: 10px;">▾</span>
+                                <span class="settings-icon" onclick="event.stopPropagation(); toggleAgentFilter()" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); opacity: 0.5; cursor: pointer; font-size: 12px;">▾</span>
                                 <div class="agent-filter-dropdown" id="agentFilterDropdown">
                                     <div class="agent-filter-option" onclick="filterByAgent('all')">
                                         <span>All Agents</span>
@@ -2405,11 +2410,11 @@
             if (!icon) return;
 
             if (currentAgentFilter === 'all' && !currentAgentSort) {
-                icon.style.opacity = '0.25';
+                icon.style.opacity = '0.5';
                 icon.textContent = '▾';
                 icon.style.color = '';
             } else {
-                icon.style.opacity = '0.6';
+                icon.style.opacity = '1';
                 icon.textContent = '▾';
                 icon.style.color = '#3b82f6';
             }
@@ -2991,7 +2996,9 @@
                 const feedbackId = row.getAttribute('data-id');
                 const isReviewed = reviewedItems[feedbackId];
 
-                if (filterValue === 'reviewed') {
+                if (filterValue === 'all') {
+                    row.style.display = '';
+                } else if (filterValue === 'reviewed') {
                     row.style.display = isReviewed ? '' : 'none';
                 } else if (filterValue === 'unreviewed') {
                     row.style.display = isReviewed ? 'none' : '';
