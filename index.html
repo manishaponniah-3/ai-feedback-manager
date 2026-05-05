@@ -2586,6 +2586,9 @@
                 event.stopPropagation();
             }
 
+            // Close right rail if it's open
+            closeRail();
+
             // Close any existing editor
             if (currentTagsEditor) {
                 currentTagsEditor.remove();
