@@ -1702,7 +1702,7 @@
                             </td>
                             <td>Guitar Center Voice Agent</td>
                             <td class="tags-cell" data-feedback-id="1">
-                                <div class="tags-container" onclick="openTagsEditor(this)"></div>
+                                <div class="tags-container" onclick="openTagsEditor(this, event)"></div>
                             </td>
                             <td style="white-space: nowrap;">04/18/2026</td>
                             <td>
@@ -1744,7 +1744,7 @@
                             </td>
                             <td>Guitar Center Voice Agent</td>
                             <td class="tags-cell" data-feedback-id="ROW_ID">
-                                <div class="tags-container" onclick="openTagsEditor(this)"></div>
+                                <div class="tags-container" onclick="openTagsEditor(this, event)"></div>
                             </td>
                             <td style="white-space: nowrap;">04/19/2026</td>
                             <td>
@@ -1786,7 +1786,7 @@
                             </td>
                             <td>Guitar Center Voice Agent</td>
                             <td class="tags-cell" data-feedback-id="ROW_ID">
-                                <div class="tags-container" onclick="openTagsEditor(this)"></div>
+                                <div class="tags-container" onclick="openTagsEditor(this, event)"></div>
                             </td>
                             <td style="white-space: nowrap;">04/17/2026</td>
                             <td>
@@ -1828,7 +1828,7 @@
                             </td>
                             <td>Guitar Center Voice Agent</td>
                             <td class="tags-cell" data-feedback-id="ROW_ID">
-                                <div class="tags-container" onclick="openTagsEditor(this)"></div>
+                                <div class="tags-container" onclick="openTagsEditor(this, event)"></div>
                             </td>
                             <td style="white-space: nowrap;">04/16/2026</td>
                             <td>
@@ -1870,7 +1870,7 @@
                             </td>
                             <td>Guitar Center Voice Agent</td>
                             <td class="tags-cell" data-feedback-id="ROW_ID">
-                                <div class="tags-container" onclick="openTagsEditor(this)"></div>
+                                <div class="tags-container" onclick="openTagsEditor(this, event)"></div>
                             </td>
                             <td style="white-space: nowrap;">04/15/2026</td>
                             <td>
@@ -1912,7 +1912,7 @@
                             </td>
                             <td>Guitar Center Voice Agent</td>
                             <td class="tags-cell" data-feedback-id="ROW_ID">
-                                <div class="tags-container" onclick="openTagsEditor(this)"></div>
+                                <div class="tags-container" onclick="openTagsEditor(this, event)"></div>
                             </td>
                             <td style="white-space: nowrap;">04/20/2026</td>
                             <td>
@@ -2580,7 +2580,12 @@
         let currentTagsEditor = null;
         const allTags = {}; // Store tags per feedback ID
 
-        window.openTagsEditor = function(container) {
+        window.openTagsEditor = function(container, event) {
+            // Prevent row click from opening right rail
+            if (event) {
+                event.stopPropagation();
+            }
+
             // Close any existing editor
             if (currentTagsEditor) {
                 currentTagsEditor.remove();
